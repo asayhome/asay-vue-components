@@ -97,12 +97,12 @@
   
   <script>
 import { ref } from "vue";
-import Paginations from "./Paginations.vue";
+import Pagination from "./Pagination.vue";
 import NProgress from "nprogress";
 import Swal from "sweetalert2";
 
 export default {
-  components: { Paginations },
+  components: { Pagination },
   props: {
     canEdit: {
       default: true,
