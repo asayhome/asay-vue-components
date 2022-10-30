@@ -234,16 +234,16 @@
       </div>
 
       <div class="mt-3">
-        <!-- <paginations
-            v-if="messages?.links"
-            :links="messages.links"
-            :getPageNumberOnly="true"
-            @pageNo="setPageNo"
-          /> -->
+        <pagination
+          v-if="messages?.links"
+          :links="messages.links"
+          :getPageNumberOnly="true"
+          @pageNo="setPageNo"
+        />
       </div>
 
       <div
-        v-if="!messages?.length"
+        v-if="!messages"
         style="
           display: flex;
           justify-content: center;
@@ -261,7 +261,7 @@
     </div>
   </div>
 
-  <modal id="usersModal" ref="usersModal" :title="__('Details')">
+  <Modal id="motifyModal" ref="motifyModal" :title="__('Details')">
     <template v-slot:body>
       <!-- <notifications-logs-table
           :key="notifyMessageKey"
@@ -270,15 +270,16 @@
           v-if="selectedMessage"
         /> -->
     </template>
-  </modal>
+  </Modal>
 
   <modal id="repliesModal" ref="repliesModalRef" :title="__('Messages')">
     <template v-slot:body>
-      <!-- <alerts-messages
-          ref="alertMessagesRef"
-          :canEdit="true"
-          @setMessage="setMessage"
-        /> -->
+      <alert-replies
+        :canEdit="isAdmin"
+        :deleteRouteUrl="route('admin.replies.destroy')"
+        :getRepliesRouteUrl="route('admin.replies.getReplies')"
+        :storeRelyRouteUrl="route('admin.replies.store')"
+      />
     </template>
   </modal>
 </template>
@@ -287,21 +288,24 @@
 import { ref } from "vue";
 import moment from "moment";
 import NProgress from "nprogress";
-// import Paginations from "../../Plugins/DataTable/Paginations.vue";
 import vSelect from "vue-select";
 //   import AlertsMessages from "./AlertsMessages.vue";
 import Swal from "sweetalert2";
+import Pagination from "./Pagination.vue";
+import Modal from "../Modal.vue";
+import AlertReplies from "./AlertReplies.vue";
 //   import NotificationsLogsTable from "../../Shared/NotificationsLogsTable.vue";
 
 export default {
   components: {
-    // Editor,
     // Modal,
     // Paginations,
-    // Multiselect,
     //   AlertsMessages,
     //   NotificationsLogsTable,
     vSelect,
+    Pagination,
+    Modal,
+    AlertReplies,
   },
   props: {
     group: {
@@ -639,7 +643,7 @@ export default {
     showUsers(message) {
       this.selectedMessage = message;
       this.notifyMessageKey += 1;
-      this.$refs.usersModal.show();
+      this.$refs.motifyModal.show();
     },
   },
 
