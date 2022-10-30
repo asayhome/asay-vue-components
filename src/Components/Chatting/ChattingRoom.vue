@@ -58,11 +58,7 @@
                     </a>
                     <br />
                     <span class="text-muted fs-7 mb-1">
-                      {{ __(message?.sender?.description) }}
-                    </span>
-                    <br />
-                    <span class="text-muted fs-7 mb-1">
-                      {{ message.created_at }}
+                      {{ message.created_time }}
                     </span>
                   </div>
                 </template>
@@ -77,15 +73,11 @@
                         ms-1
                       "
                     >
-                      {{ message.sender.name }}
+                      {{ message.sender?.name }}
                     </a>
                     <br />
                     <span class="text-muted fs-7 mb-1">
-                      {{ __(message.sender.description) }}
-                    </span>
-                    <br />
-                    <span class="text-muted fs-7 mb-1">
-                      {{ message.created_at }}
+                      {{ message.created_time }}
                     </span>
                   </div>
                   <div class="symbol symbol-35px symbol-circle">
