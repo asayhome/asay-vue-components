@@ -359,19 +359,19 @@ import _ from "lodash";
 export default {
   props: {
     group: String,
-    groupId: {
-      default: null,
-    },
-    senderId: {
-      default: null,
-    },
-    receiverId: {
-      default: null,
-    },
+    groupId: Number,
+    senderId: Number,
+    receiverId: Number,
     showUserList: {
       default: true,
     },
-    workedRoute: {
+    getMessagesUrl: {
+      default: null,
+    },
+    getUsersUrl: {
+      default: null,
+    },
+    sendMessageUrl: {
       default: null,
     },
   },
@@ -399,29 +399,27 @@ export default {
   },
   methods: {
     getMessages() {
-      if (route().current(this.workedRoute)) {
-        NProgress.start();
-        Axios.post(route("chattings.getMessages"), {
-          group: this.group,
-          group_id: this.groupId,
-          sender_id: this.senderId,
-          receiver_id: this.form.receiver_id,
-        }).then((res) => {
-          if (res.data.success) {
-            this.messages = res.data.messages;
-            // scroll down to last message
-            var objDiv = document.getElementById("chat_div");
-            if (objDiv?.scrollHeight) {
-              objDiv.scrollTop = objDiv.scrollHeight;
-            }
+      NProgress.start();
+      Axios.post(this.getMessagesUrl, {
+        group: this.group,
+        group_id: this.groupId,
+        sender_id: this.senderId,
+        receiver_id: this.form.receiver_id,
+      }).then((res) => {
+        if (res.data.success) {
+          this.messages = res.data.messages;
+          // scroll down to last message
+          var objDiv = document.getElementById("chat_div");
+          if (objDiv?.scrollHeight) {
+            objDiv.scrollTop = objDiv.scrollHeight;
           }
-          NProgress.done();
-        });
-      }
+        }
+        NProgress.done();
+      });
     },
     getUsersList() {
       NProgress.start();
-      Axios.post(route("chattings.getUsersList"), {
+      Axios.post(this.getUsersUrl, {
         group: this.group,
         group_id: this.groupId,
         sender_id: this.senderId,
@@ -461,7 +459,7 @@ export default {
       this.getMessages();
     },
     async send() {
-      await this.form.post(route("chattings.sendMessage"), {
+      await this.form.post(this.sendMessageUrl, {
         preserveScroll: true,
         onSuccess: (data) => {
           if (!this.form.hasErrors) {
