@@ -203,7 +203,7 @@
               {{ __("Sent") }}
             </p>
           </div>
-          <div class="p-3 d-flex flex-column">
+          <div class="p-3 d-flex flex-column" v-if="isAdmin">
             <span
               >{{ __("Sent to") }}: ({{
                 message.receivers ? message.receivers.length : 0
