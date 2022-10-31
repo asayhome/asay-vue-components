@@ -4,26 +4,26 @@
       <div class="col-md-12 rounded p-3" style="background-color: #e2e0e9">
         <div class="d-flex flex-row justify-content-between">
           <div>
-            <strong>
-              {{ message.title }}
-            </strong>
+            <strong> {{ message.title }}#{{ message.id }}# </strong>
           </div>
           <div class="d-flex flex-row">
-            <a @click="select(message)" class="btn btn-primary m-1">
+            <a @click="select(message)" class="btn btn-sm btn-primary m-1 p-2">
               <span>{{ __("Select") }}</span>
             </a>
-            <a @click="display(message.id)" class="btn btn-dark m-1">
+            <a @click="display(message.id)" class="btn btn-sm btn-dark m-1 p-2">
               {{ __("Display") }}
             </a>
-            <a @click="edit(message)" class="btn btn-success m-1">
+            <a @click="edit(message)" class="btn btn-sm btn-success m-1 p-2">
               <span>{{ __("Edit") }}</span>
             </a>
-            <a @click="deleteMessage(message.id)" class="btn btn-danger m-1">
+            <a
+              @click="deleteMessage(message.id)"
+              class="btn btn-sm btn-danger m-1 p-2"
+            >
               {{ __("Delete") }}
             </a>
           </div>
         </div>
-        <p>{{ message.description }}</p>
         <div v-if="message.id == collapse_id" v-html="message.content"></div>
       </div>
     </div>
@@ -67,24 +67,6 @@
         </div>
       </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-md-2">
-        <label for="">{{ __("Description") }}</label>
-      </div>
-      <div class="col-md-10">
-        <textarea
-          rows="5"
-          class="form-control"
-          id="description"
-          v-model="form.description"
-        ></textarea>
-        <div>
-          <span v-if="errors?.description" class="text-danger">{{
-            errors.description
-          }}</span>
-        </div>
-      </div>
-    </div>
     <div class="row">
       <div class="col-md-12">
         <button @click="saveMessage" type="submit" class="btn btn-primary mt-3">
@@ -115,9 +97,7 @@ export default {
     let form = ref({
       title: null,
       content: null,
-      description: null,
       pageNo: 1,
-      action: "save",
       id: null,
     });
     let errors = ref({});
@@ -142,12 +122,10 @@ export default {
       }
     },
     edit(message) {
-      this.form.action = "update";
+      console.log(message);
       this.form.id = message.id;
       this.form.title = message.title;
       this.form.content = message.content;
-      this.$refs.alertsEditorRef.setContent(message.content);
-      this.form.description = message.description;
     },
     select(message) {
       this.$emit("setMessage", message);
@@ -155,12 +133,11 @@ export default {
     deleteMessage(id) {
       NProgress.start();
       axios
-        .post(this.deleteRouteUrl, { id: id })
+        .post(this.deleteRouteUrl, {
+          id: id,
+        })
         .then((res) => {
-          if (!res.data.success) {
-            this.errors = res.data.errors;
-          } else {
-            this.errors = {};
+          if (res.data.success) {
             Swal.fire({
               text: res.data.msg,
               icon: "success",
@@ -183,10 +160,7 @@ export default {
       axios
         .post(this.getRepliesRouteUrl, this.form)
         .then((res) => {
-          if (!res.data.success) {
-            this.errors = res.data.errors;
-          } else {
-            this.errors = {};
+          if (res.data.success) {
             this.messages = res.data.messages;
           }
           NProgress.done();
@@ -210,9 +184,7 @@ export default {
               confirmButtonText: this.__("Ok"),
             });
             this.form.title = null;
-            this.form.content = null;
-            this.$refs.alertsEditorRef.setContent("");
-            this.form.description = null;
+            this.form.content = "";
             this.form.action = "save";
             this.getMessages();
           }
@@ -224,7 +196,7 @@ export default {
     },
   },
   mounted() {
-    //this.getMessages();
+    this.getMessages();
   },
 };
 </script>

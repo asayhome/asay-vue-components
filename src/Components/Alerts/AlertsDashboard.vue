@@ -262,26 +262,22 @@
   </div>
 
   <Modal id="motifyModal" ref="motifyModal" :title="__('Details')">
-    <template v-slot:body>
-      <!-- <notifications-logs-table
-          :key="notifyMessageKey"
-          :model="'MessagesSender'"
-          :modelId="selectedMessage.id"
-          v-if="selectedMessage"
-        /> -->
-    </template>
+    <asay-notifications-logs-table
+      ref="notifyMessageRef"
+      :notifyId="selectedMessage.id"
+      v-if="selectedMessage"
+    />
   </Modal>
-
-  <modal id="repliesModal" ref="repliesModalRef" :title="__('Messages')">
-    <template v-slot:body>
-      <alert-replies
-        :canEdit="isAdmin"
-        :deleteRouteUrl="route('admin.replies.destroy')"
-        :getRepliesRouteUrl="route('admin.replies.getReplies')"
-        :storeRelyRouteUrl="route('admin.replies.store')"
-      />
-    </template>
-  </modal>
+  <Modal id="repliesModal" ref="repliesModalRef" :title="__('Messages')">
+    <asay-alert-replies
+      :canEdit="isAdmin"
+      :deleteRouteUrl="route('admin.replies.destroy')"
+      :getRepliesRouteUrl="route('admin.replies.getReplies')"
+      :storeRelyRouteUrl="route('admin.replies.store')"
+      ref="alertRepliesRef"
+      @setMessage="setMessage"
+    />
+  </Modal>
 </template>
   
   <script>
@@ -289,19 +285,13 @@ import { ref } from "vue";
 import moment from "moment";
 import NProgress from "nprogress";
 import vSelect from "vue-select";
-//   import AlertsMessages from "./AlertsMessages.vue";
 import Swal from "sweetalert2";
 import Pagination from "./Pagination.vue";
 import Modal from "../Modal.vue";
 import AlertReplies from "./AlertReplies.vue";
-//   import NotificationsLogsTable from "../../Shared/NotificationsLogsTable.vue";
 
 export default {
   components: {
-    // Modal,
-    // Paginations,
-    //   AlertsMessages,
-    //   NotificationsLogsTable,
     vSelect,
     Pagination,
     Modal,
@@ -338,18 +328,12 @@ export default {
     showSendTo: {
       default: true,
     },
-    getConfigUrl: {
-      default: false,
-    },
-    getAlertsUrl: {
-      default: false,
-    },
-    getReceiversUrl: {
-      default: false,
-    },
-    sendAlertUrl: {
-      default: false,
-    },
+    getConfigUrl: String,
+    getAlertsUrl: String,
+    getReceiversUrl: String,
+    makeAlertMessageAsReadUrl: String,
+    deleteAlertMessageUrl: String,
+    sendAlertUrl: String,
   },
   setup(props) {
     let form = ref({
@@ -379,7 +363,6 @@ export default {
     let selectedMessage = ref(null);
     let errors = ref({});
     let params = ref({});
-    let notifyMessageKey = ref(1);
     let configs = ref(null);
 
     return {
@@ -393,7 +376,6 @@ export default {
       selectedMessage,
       errors,
       params,
-      notifyMessageKey,
       configs,
     };
   },
@@ -401,12 +383,11 @@ export default {
     setMessage(message) {
       this.form.title = message.title;
       this.form.message = message.content;
-      this.$refs.alertsFormEditorRef.setContent(message.content);
       this.$refs.repliesModalRef.close();
     },
     selectReply() {
       this.$refs.repliesModalRef.show();
-      this.$refs.alertMessagesRef.getMessages();
+      this.$refs.alertRepliesRef.getMessages();
     },
     getAppName() {
       if (this.params?.appName) {
@@ -593,21 +574,15 @@ export default {
     makeAlertMessageAsRead(id) {
       NProgress.start();
       axios
-        .post("/admin/auth/makeAlertMessageAsRead", { id: id })
+        .post(this.makeAlertMessageAsReadUrl, { id: id })
         .then((res) => {
+          Swal.fire({
+            text: res.data.msg,
+            icon: res.data.success ? "success" : "error",
+            confirmButtonText: this.__("Ok"),
+          });
           if (res.data.success) {
-            Swal.fire({
-              text: res.data.msg,
-              icon: "success",
-              confirmButtonText: this.__("Ok"),
-            });
             this.getAlertsMessages();
-          } else {
-            Swal.fire({
-              text: res.data.msg,
-              icon: "error",
-              confirmButtonText: this.__("Ok"),
-            });
           }
           NProgress.done();
         })
@@ -618,7 +593,7 @@ export default {
     deleteAlertMessage(id) {
       NProgress.start();
       axios
-        .post("/admin/auth/deleteAlertMessage", { id: id })
+        .post(this.deleteAlertMessageUrl, { id: id })
         .then((res) => {
           if (res.data.success) {
             Swal.fire({
@@ -642,8 +617,10 @@ export default {
     },
     showUsers(message) {
       this.selectedMessage = message;
-      this.notifyMessageKey += 1;
       this.$refs.motifyModal.show();
+      setTimeout(() => {
+        this.$refs.notifyMessageRef.refreshData();
+      }, 1000);
     },
   },
 
