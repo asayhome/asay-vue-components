@@ -78,7 +78,7 @@
               v-model="form.received_by"
               :options="receivers"
               :searchable="true"
-              multiple="true"
+              :multiple="true"
             />
             <span v-if="errors?.received_by" class="text-danger mt-1">{{
               __(errors.received_by)

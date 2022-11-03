@@ -128,6 +128,7 @@ export default {
     },
     refreshData() {
       // this.compKey++;
+      console.log(this.notifyId);
       this.$refs.notificationsLogsDataTableRef.reloadData();
     },
   },
