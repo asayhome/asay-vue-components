@@ -1,5 +1,6 @@
 <template>
   <asay-vue-datatable
+    id="notificationsLogsDataTableRef"
     ref="notificationsLogsDataTableRef"
     :columns="columns"
     :ajaxUrl="route('admin.notifications.getNotificationsLogs')"
