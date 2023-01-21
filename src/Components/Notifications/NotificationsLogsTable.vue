@@ -1,9 +1,9 @@
 <template>
-  <asay-vue-datatable
+  <app-datatable
     id="notificationsLogsDataTableRef"
     ref="notificationsLogsDataTableRef"
     :columns="columns"
-    :ajaxUrl="route('admin.notifications.getNotificationsLogs')"
+    :route="route('admin.notifications.getNotificationsLogs')"
     :params="queryParams"
     @setAction="setAction"
     :key="compKey"
@@ -33,7 +33,7 @@
         </div>
       </div>
     </template>
-  </asay-vue-datatable>
+  </app-datatable>
   <modal
     id="detailsModal"
     ref="detailsModalRef"
@@ -54,15 +54,12 @@
       </template> -->
   </modal>
 </template>
-  
+
   <script>
 import { ref } from "vue";
 import Modal from "../Modal.vue";
 export default {
   components: {
-    DataTable,
-    Modal,
-    DataTable,
     Modal,
   },
   props: {
@@ -145,6 +142,6 @@ export default {
   },
 };
 </script>
-  
+
   <style>
 </style>

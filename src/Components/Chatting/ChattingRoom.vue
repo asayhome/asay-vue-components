@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import { useForm } from "@inertiajs/inertia-vue3";
+import { useForm } from "@inertiajs/vue3";
 import NProgress from "nprogress";
 import Axios from "axios";
 import _ from "lodash";
@@ -310,4 +310,4 @@ export default {
 </script>
 
 <style>
-</style> 
+</style>
