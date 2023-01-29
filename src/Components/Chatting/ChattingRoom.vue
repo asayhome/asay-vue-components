@@ -102,6 +102,17 @@
                 data-kt-element="message-text"
               >
                 <p v-html="message.message"></p>
+                <div v-if="message.attachments">
+                  <span
+                    v-for="(attachment, index) in message?.attachments"
+                    :key="index"
+                  >
+                    <i
+                      @click="download(attachment)"
+                      class="bi bi-paperclip fs-3"
+                    ></i
+                  ></span>
+                </div>
               </div>
             </div>
           </div>
@@ -127,8 +138,14 @@
       </span>
       <div class="d-flex align-items-center justify-content-between mt-5">
         <div class="mr-3">
-          <label for="attachments" class="btn btn-clean btn-icon btn-md">
-            <i class="flaticon2-photo-camera icon-lg"></i>
+          <label for="attachments" class="btn">
+            <i class="bi bi-upload fs-3"></i>
+            <span style="margin-right: 5px; margin-left: 5px">{{
+              __("Add attachments")
+            }}</span>
+            <span v-if="form.attachments">
+              ({{ form.attachments.length }})
+            </span>
           </label>
           <input
             id="attachments"
@@ -138,18 +155,6 @@
             name="attachments"
             multiple
           />
-          <!-- <ul style="display: inline" v-if="form.attachments.length">
-              <li
-                v-for="(attachment, index) in form.attachments"
-                :key="index"
-                style="display: inline; margin: 1px"
-              >
-                <img
-                  style="width: 50px; height: 50px"
-                  :src="getImageUrl(attachment)"
-                />
-              </li>
-            </ul> -->
         </div>
         <div>
           <button
@@ -159,8 +164,6 @@
               text-uppercase
               font-weight-bold
               chat-send
-              py-2
-              px-6
             "
           >
             {{ __("Send") }}
@@ -233,6 +236,7 @@ export default {
       }).then((res) => {
         if (res.data.success) {
           this.messages = res.data.messages;
+          console.log(res.data.messages);
           // scroll down to last message
           setTimeout(() => {
             var objDiv = document.getElementById("chat_div");
@@ -300,6 +304,11 @@ export default {
     refreshData() {
       this.getUsersList();
       this.getMessages();
+    },
+    download(attachment) {
+      let path = "/storage/" + attachment;
+      let extension = path.split(".").pop();
+      this.downloadFile(path, "file", extension);
     },
   },
   watch: {},
