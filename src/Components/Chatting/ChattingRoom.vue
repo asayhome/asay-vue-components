@@ -236,7 +236,6 @@ export default {
       }).then((res) => {
         if (res.data.success) {
           this.messages = res.data.messages;
-          console.log(res.data.messages);
           // scroll down to last message
           setTimeout(() => {
             var objDiv = document.getElementById("chat_div");
@@ -293,6 +292,7 @@ export default {
         onSuccess: () => {
           if (!this.form.hasErrors) {
             this.form.message = null;
+            this.form.attachments = [];
             this.getMessages();
           }
         },
